@@ -1,0 +1,94 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<style type="text/css">
+		.container .form {
+			float : left;
+			margin-right : 10px;
+		}	
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="form">
+			<form name="compileForm" action="/compile" method="post">
+				<dl class="compile">
+					<h3>simple compile</h3>
+					<dt>id</dt>
+					<dd>
+						<input type="text" name="id" required="required" placeholder="마크업 id를 입력하세요.">
+					</dd>
+					<dt>markup</dt>
+					<dd>
+						<textarea name="markup" required="required" placeholder="마크업을 입력하세요."></textarea>
+					</dd>
+					<button id="compileRequest">compile</button>
+				</dl>
+			</form>	
+		</div>
+		<div class="form">
+			<form name="renderingForm" action="/render" method="post">
+				<dl class="rendering">
+					<h3>simple rendering</h3>
+					<dt>id</dt>
+					<dd>
+						<input type="text" name="id" required="required" placeholder="마크업 id를 입력하세요.">
+					</dd>
+					<dt>compiled markup</dt>
+					<dd>
+						<textarea name="compiledMarkup" required="required" placeholder="컴파일된 마크업을 입력하세요."></textarea>
+					</dd>
+					<dt>rendering data</dt>
+					<dd>
+						<textarea name="data" placeholder="rendering에 사용할 json data를 입력하세요."></textarea>
+					</dd>
+					<button id="renderingRequest">rendering</button>
+				</dl>
+			</form>
+		</div>
+	</div>
+	<div id="renderingResult">
+	</div>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript">
+		var parseForm = function($form){
+			var json = {
+				url : $form.attr("action"),
+				type : $form.attr("method"),
+				data : {}
+			};			
+			$form.find("textarea, input").each(function(){
+				json.data[$(this).attr("name")] = $(this).val();
+			});		
+			return json;	
+		};
+
+		var request = function(params){
+			return $.ajax({
+				url : params.url,
+				type : params.type,
+				data : params.data,
+				complete : function(result){
+					console.log(result);					
+				},
+				success : function(){
+					alert("성공");
+				},
+				error : function(){
+					alert("에러? 왜?");
+				}
+			});
+		};
+
+		$("form[name=compileForm]").on("submit", function(e){
+			e.preventDefault();
+			var params = parseForm($(this));	
+
+			request(params).done(function(compiledMarkup){
+				alert(compiledMarkup);
+				$("textarea[name=compiledMarkup]").val(compiledMarkup);
+			});
+		});
+	</script>
+</body>
+</html>
