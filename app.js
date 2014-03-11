@@ -37,6 +37,11 @@ var mimeMapper = {
 		"Content-Type" : "application/javascript"
 	}
 };
+
+var resolveError = function(error, response){
+    response.writeHead(500, mimeMapper.text);
+    response.end(error.message);
+};
 var urlMapper = {
 	"/" : function(request, response){		
 		fs.readFile("index.html", function(error, html){
@@ -74,10 +79,17 @@ var urlMapper = {
 		var errorText;
 		if(body && body.id && body.compiledMarkup){
 			dust.loadSource(body.compiledMarkup);
+            if(body.data){
+                try{
+                    body.data = JSON.parse(body.data);
+                }catch(e){
+                    resolveError(response, e);
+                }
+
+            }
 			dust.render(body.id, body.data, function(error, html){
-				if(error){					
-					response.writeHead(500, mimeMapper.text);						
-					response.end(error.message);
+				if(error){
+                    resolveError(response, error);
 				}else{
 					response.writeHead(200, mimeMapper.html);
 					response.end(html);
