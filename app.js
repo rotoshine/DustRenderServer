@@ -60,12 +60,13 @@ var urlMapper = {
 			try{
 				compiledMarkup = dust.compile(body.markup, body.id);				
 			}catch(e){
+                console.error(e);
 				responseCode = 500;
 				compiledMarkup = e;
 			}			
 		}	
-		console.log(compiledMarkup);
-		response.writeHead(responseCode, mimeMapper.js);			
+		console.log("compile result : " + compiledMarkup);
+		response.writeHead(responseCode, mimeMapper.text);
 		response.end(compiledMarkup);
 	},
 	"/render" :  function(request, response){

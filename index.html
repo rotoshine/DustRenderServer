@@ -5,7 +5,10 @@
 		.container .form {
 			float : left;
 			margin-right : 10px;
-		}	
+		}
+		.renderingResult{
+			clear: both;
+		}
 	</style>
 </head>
 <body>
@@ -47,7 +50,10 @@
 			</form>
 		</div>
 	</div>
-	<div id="renderingResult">
+	<div class="renderingResult">
+		<h3>rendering result</h3>
+		<div id="renderingResult">
+		</div>
 	</div>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 	<script type="text/javascript">
@@ -67,16 +73,7 @@
 			return $.ajax({
 				url : params.url,
 				type : params.type,
-				data : params.data,
-				complete : function(result){
-					console.log(result);					
-				},
-				success : function(){
-					alert("성공");
-				},
-				error : function(){
-					alert("에러? 왜?");
-				}
+				data : params.data
 			});
 		};
 
@@ -85,8 +82,17 @@
 			var params = parseForm($(this));	
 
 			request(params).done(function(compiledMarkup){
-				alert(compiledMarkup);
+				$("form[name=renderingForm]").find("input[name=id]").val(params.data.id);
 				$("textarea[name=compiledMarkup]").val(compiledMarkup);
+			});
+		});
+
+		$("form[name=renderingForm]").on("submit", function(e){
+			e.preventDefault();
+			var params = parseForm($(this));
+
+			request(params).done(function(html){
+				$("#renderingResult").html(html);
 			});
 		});
 	</script>
